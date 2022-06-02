@@ -86,7 +86,7 @@ app.post('/users/register', async (req,res)=>{
         console.log(hashedPassword)
 
         pool.query(
-            `SELECT * FROM users
+            `SELECT * FROM client
             WHERE email = $1`, [email],(error, results)=>{
                 if(error){
                     throw error
@@ -97,7 +97,7 @@ app.post('/users/register', async (req,res)=>{
                         res.render("register", {errors})
                     }else{
                         pool.query(
-                            `INSERT INTO users (name, email, password)
+                            `INSERT INTO client (name, email, password)
                             VALUES ($1,$2,$3)`, [name,email,hashedPassword], (error, results)=>{
                                 if(error){
                                     throw error

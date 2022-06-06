@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt')
 const session = require('express-session')
 const flash = require('express-flash')
 const passport = require('passport')
+const { v4: uuidv4 } = require('uuid');
 
 
 const initializePassport = require('./passportConfig')
@@ -84,21 +85,22 @@ app.post('/users/register', async (req,res)=>{
 
         let hashedPassword = await bcrypt.hash(password,10)
         console.log(hashedPassword)
-
+        uuid = uuidv4();
         pool.query(
             `SELECT * FROM client
             WHERE email = $1`, [email],(error, results)=>{
                 if(error){
                     throw error
                 }else{
+                    console.log("HERE:")
                     console.log(results.rows)
                     if(results.rows.length >0){
                         errors.push({message: "Email already registered"})
                         res.render("register", {errors})
                     }else{
                         pool.query(
-                            `INSERT INTO client (name, email, password)
-                            VALUES ($1,$2,$3)`, [name,email,hashedPassword], (error, results)=>{
+                            `INSERT INTO client (id, name, email, password)
+                            VALUES ($1,$2,$3, $4)`, [uuid,name,email,hashedPassword], (error, results)=>{
                                 if(error){
                                     throw error
                                 }else{
